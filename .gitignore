@@ -1,19 +1,22 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
+# Python Protection
 venv/
 .venv/
 env/
-ENV/
-*.log
+__pycache__/
+*.py[cod]
 
-# Unity Core Globals
-Library/
-Logs/
-Temp/
-Obj/
-Build/
-Builds/
-UserSettings/
-DerivedDataCache/
+# Universal Unity Protection
+**/Library/
+**/Logs/
+**/logs/
+**/Temp/
+**/Obj/
+**/Build/
+**/Builds/
+**/UserSettings/
+**/DerivedDataCache/
+
+# OS Noise
+.vscode/
+*.sln
+*.csproj
