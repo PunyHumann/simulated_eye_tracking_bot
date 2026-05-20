@@ -1,4 +1,4 @@
-# Python Protection
+# Python Environment & Caches
 venv/
 .venv/
 env/
@@ -15,8 +15,22 @@ __pycache__/
 **/Builds/
 **/UserSettings/
 **/DerivedDataCache/
+/[Aa]ssets/AssetStoreTools*
+*.unitypackage
 
-# OS Noise
+# Visual Studio IDE Caches & Project Lock Files
+.vs/
+*.slnx
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code & Unity Auto-Generated Project Files
 .vscode/
 *.sln
 *.csproj
+
+# OS System Noise
+Thumbs.db
+.DS_Store

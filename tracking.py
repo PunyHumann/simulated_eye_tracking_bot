@@ -3,7 +3,7 @@ import cv2
 
 #UDP Deffinitions
 IP_ADDRESS = "127.0.0.1"
-PORT_NUM = 5005
+PORT_NUM = 5008
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
@@ -58,8 +58,8 @@ while True:
     
     #print data
     delay_count += 1
-    if delay_count % delay == 0:
-        print (he_string)
+    # if delay_count % delay == 0:
+    #     print (he_string)
     
     
     #display
