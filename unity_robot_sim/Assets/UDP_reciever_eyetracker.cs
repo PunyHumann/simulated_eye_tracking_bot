@@ -15,6 +15,7 @@ public class UDP_reciever_eyetracker : MonoBehaviour
 {
     private UdpClient udpClient;
     private IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+    public float prevRatio = 0.0f;
     public float centerRatio = 0.0f;
 
     public void UDP_reciever()
@@ -39,8 +40,14 @@ public class UDP_reciever_eyetracker : MonoBehaviour
 
     void Update()
     {
+        float prevAngle = 90.0f * prevRatio;
         float angle = 90.0f * centerRatio;
-        transform.eulerAngles = new Vector3(0.0f, angle, 0.0f);
+        var prevState = Quaternion.Euler(0, prevAngle, 0);
+        var currState = Quaternion.Euler(0, angle, 0);
+
+        transform.rotation = Quaternion.Slerp(prevState, currState, 0.05f);
+        //transform.eulerAngles = new Vector3(0.0f, angle, 0.0f);
+        prevRatio = centerRatio;
     }
 
     void OnDisable()
