@@ -7,15 +7,21 @@ using System.Text;
 using System.Configuration;
 using System.Runtime.CompilerServices;
 using UnityEditor;
+using Random = System.Random;
 
 public class UDP_mp_tracker : MonoBehaviour
 {
     private UdpClient udpClient;
     private IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-    private float prevRatioY = 0.0f;
-    private float prevRatioX = 0.0f;
+    private float prevAngleY = 0.0f;
+    private float prevAngleX = 0.0f;
     private float centerRatioY = 0.0f;
     private float centerRatioX = 0.0f;
+    public float maxAngleX = 15.0f;
+    public float maxAngleY = 20.0f;
+    private double t = 0.0;
+    public float swayStrength = 0.5f;
+    public double swaySpeed = 3.0;
     public void UDP_reciever()
     {
         while (true)
@@ -34,6 +40,7 @@ public class UDP_mp_tracker : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
         udpClient = new UdpClient(5008);
         Thread t1 = new Thread(UDP_reciever);
         t1.IsBackground = true;
@@ -43,22 +50,23 @@ public class UDP_mp_tracker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //change floats bellow to modify max and min angle
-        float prevAngleY = 20.0f * prevRatioY;
-        float prevAngleX = 15.0f * prevRatioX;
-        float angleY = 20.0f * centerRatioY;
-        float angleX = 15.0f * centerRatioX;
+        float sway = (float)Math.Sin(t) * swayStrength;
+        float angleY = maxAngleY * centerRatioY;
+        float angleX = maxAngleX * centerRatioX + sway;
+        Debug.Log(angleX);
         var prevStateY = Quaternion.Euler(0, prevAngleY, 0);
         var prevStateX = Quaternion.Euler(prevAngleX, 0, 0);
         var currStateY = Quaternion.Euler(0, angleY, 0);
         var currStateX = Quaternion.Euler(angleX, 0, 0);
         var prevState = prevStateY * prevStateX;
         var currState = currStateY * currStateX;
+        prevAngleY = angleY;
+        prevAngleX = angleX;
 
         transform.rotation = Quaternion.Slerp(prevState, currState, 0.05f);
-        //transform.eulerAngles = new Vector3(0.0f, angle, 0.0f);
-        prevRatioY = centerRatioY;
-        prevRatioX = centerRatioX;
+        //t += Math.PI/6;
+        t += Time.deltaTime * swaySpeed;
+
     }
     void OnDisable()
     {
