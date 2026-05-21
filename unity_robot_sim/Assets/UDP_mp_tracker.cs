@@ -44,10 +44,10 @@ public class UDP_mp_tracker : MonoBehaviour
     void Update()
     {
         //change floats bellow to modify max and min angle
-        float prevAngleY = 30.0f * prevRatioY;
-        float prevAngleX = 30.0f * prevRatioX;
-        float angleY = 30.0f * centerRatioY;
-        float angleX = 30.0f * centerRatioX;
+        float prevAngleY = 20.0f * prevRatioY;
+        float prevAngleX = 15.0f * prevRatioX;
+        float angleY = 20.0f * centerRatioY;
+        float angleX = 15.0f * centerRatioX;
         var prevStateY = Quaternion.Euler(0, prevAngleY, 0);
         var prevStateX = Quaternion.Euler(prevAngleX, 0, 0);
         var currStateY = Quaternion.Euler(0, angleY, 0);
