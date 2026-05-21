@@ -16,12 +16,25 @@ IP_ADDRESS = "127.0.0.1"
 PORT_NUM = 5008
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+
+#------------------------------------------------------------------------------------------------------------------------
+
+#misc. fn's
+
+def get_timestamp():
+    curr_time = time.time()
+    elapsed_time = curr_time - start_time
+    return int(elapsed_time * 1000)
+
 #------------------------------------------------------------------------------------------------------------------------
 
 #MEDIA PIPE SETUP
 
+#globals
 #clipboard containing latest mp image
 mp_clipboard = None
+eye_center_x = 0.0
+eye_center_y = 0.0
 
 #Face detection model
 model_path = 'face_landmarker.task'
@@ -33,10 +46,12 @@ FaceLandmarkerOptions = mp.tasks.vision.FaceLandmarkerOptions
 FaceLandmarkerResult = mp.tasks.vision.FaceLandmarkerResult
 VisionRunningMode = mp.tasks.vision.RunningMode
 
-# Create a face landmarker instance with the live stream mode:
+# Here we can play around with the result
 def print_result(result, output_image, timestamp_ms):
     global keep_running
     global mp_clipboard
+    global eye_center_x
+    global eye_center_y
     #print('face landmarker result: {}'.format(result))
     if result.face_landmarks and keep_running:
         face_landmarks = result.face_landmarks[0]
@@ -65,11 +80,15 @@ def print_result(result, output_image, timestamp_ms):
             connection_drawing_spec=drawing_styles.get_default_face_mesh_iris_connections_style())
         
         #isolating eyes coords
-        left_iris = result.face_landmarks[0][468]
-        right_iris = result.face_landmarks[0][473]
-        li_x, li_y = left_iris.x, left_iris.y
-        ri_x, ri_y = right_iris.x, right_iris.y
-        #print(f"left: x={li_x}, y={li_y} right: x={ri_x}, y={ri_y}")
+        far_left_eye_corner = result.face_landmarks[0][33]
+        far_right_eye_corner = result.face_landmarks[0][362]
+        lc_x, lc_y = far_left_eye_corner.x, far_left_eye_corner.y
+        rc_x, rc_y = far_right_eye_corner.x, far_right_eye_corner.y
+        eye_center_x = ((lc_x + rc_x)/2 - 0.5) * 2
+        eye_center_y = ((lc_y + rc_y)/2 - 0.5) * -2
+        #print(f"x: {eye_center_x}, y: {eye_center_y}")
+
+
 
         mp_clipboard = numpy_matrix
         
@@ -83,19 +102,6 @@ options = FaceLandmarkerOptions(
 
 #Time settup (to get frame timestamp)
 start_time = time.time()
-
-#------------------------------------------------------------------------------------------------------------------------
-
-#misc. fn's
-
-def get_horizontal_distance(frame, center, x, y, w, h):
-    eye_center = x + (w//2)
-    return (eye_center - center)/center
-
-def get_timestamp():
-    curr_time = time.time()
-    elapsed_time = curr_time - start_time
-    return int(elapsed_time * 1000)
 
 #------------------------------------------------------------------------------------------------------------------------
 
@@ -125,19 +131,21 @@ with FaceLandmarker.create_from_options(options) as landmarker:
         #running model
         landmarker.detect_async(mp_image, frame_timestamp)
         
+        #image output
         if mp_clipboard is not None:
-            #print("something is here")
             rendered_frame = cv2.cvtColor(mp_clipboard, cv2.COLOR_RGB2BGR)
             cv2.imshow("Face detection", rendered_frame)
+        
+        #udp
+        eye_center_x_string = f"{eye_center_x:.2f}"
+        eye_center_y_string = f"{eye_center_y:.2f}"
+        udp_string = eye_center_x_string + ',' + eye_center_y_string
+        client_socket.sendto(udp_string.encode(), (IP_ADDRESS, PORT_NUM))
 
         # q to quit - 1ms buffer
         if cv2.waitKey(1) & 0xFF == ord('q'):
             keep_running = False
-        
-        #Sending horizontal eye (he) string to unity through UDP
-        #client_socket.sendto(he_string.encode(), (IP_ADDRESS, PORT_NUM))
 
-        
     # Shut off
     cap.release()
     cv2.destroyAllWindows()
