@@ -42,12 +42,35 @@ def print_result(result, output_image, timestamp_ms):
         face_landmarks = result.face_landmarks[0]
         numpy_matrix = output_image.numpy_view().copy()
 
+        #drawing face mesh
         mp_drawing.draw_landmarks(
             image=numpy_matrix,
             landmark_list=face_landmarks,
             connections=vision.FaceLandmarksConnections.FACE_LANDMARKS_TESSELATION,
             landmark_drawing_spec=None,
             connection_drawing_spec=drawing_styles.get_default_face_mesh_tesselation_style())
+        
+        mp_drawing.draw_landmarks(
+            image=numpy_matrix,
+            landmark_list=face_landmarks,
+            connections=vision.FaceLandmarksConnections.FACE_LANDMARKS_LEFT_IRIS,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=drawing_styles.get_default_face_mesh_iris_connections_style())
+        
+        mp_drawing.draw_landmarks(
+            image=numpy_matrix,
+            landmark_list=face_landmarks,
+            connections=vision.FaceLandmarksConnections.FACE_LANDMARKS_RIGHT_IRIS,
+            landmark_drawing_spec=None,
+            connection_drawing_spec=drawing_styles.get_default_face_mesh_iris_connections_style())
+        
+        #isolating eyes coords
+        left_iris = result.face_landmarks[0][468]
+        right_iris = result.face_landmarks[0][473]
+        li_x, li_y = left_iris.x, left_iris.y
+        ri_x, ri_y = right_iris.x, right_iris.y
+        #print(f"left: x={li_x}, y={li_y} right: x={ri_x}, y={ri_y}")
+
         mp_clipboard = numpy_matrix
         
 options = FaceLandmarkerOptions(
@@ -106,8 +129,7 @@ with FaceLandmarker.create_from_options(options) as landmarker:
             #print("something is here")
             rendered_frame = cv2.cvtColor(mp_clipboard, cv2.COLOR_RGB2BGR)
             cv2.imshow("Face detection", rendered_frame)
-        #else:
-            #cv2.imshow("Face detection", frame)
+
         # q to quit - 1ms buffer
         if cv2.waitKey(1) & 0xFF == ord('q'):
             keep_running = False
