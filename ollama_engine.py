@@ -2,11 +2,19 @@ import speech_recognition as sr
 import pyttsx3
 import queue
 import keyboard
+import socket
 from ollama import Client
 from ollama import chat
 
-#Ollama setup: https://github.com/ollama/ollama-python/tree/main/examples
-#Ollama Client settup
+#TCP Deffinitions
+IP_ADDRESS = "127.0.0.1"
+PORT_NUM = 5009
+BUFFER_SIZE = 8192
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((IP_ADDRESS, PORT_NUM))
+
+
+#Ollama setup
 client = Client()
 response = client.create(
     model = 'CUBE',
@@ -16,11 +24,14 @@ response = client.create(
 )
 messages = []
 
-#Creating Text queue for stt -> Ollama
+#------------------------------------------------------------------------------------
+
+# SPEAH TO TEXT
+
+# Creating Text queue for stt -> Ollama
 text_q = queue.Queue(maxsize=0)
 
-#stt reference: https://www.geeksforgeeks.org/python/python-convert-speech-to-text-and-text-to-speech/
-#stt background reference: https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
+# Stt setup
 recognizer = sr.Recognizer()
 mic = sr.Microphone()
 with mic:
@@ -50,26 +61,31 @@ def background_callback(recognizer, audio):
 #innitializing background stt thread
 stop_listening = recognizer.listen_in_background(mic, background_callback)
 
+#------------------------------------------------------------------------------------
+
+# OLLAMA CHAT LOOP
+
 # Main loop (press 'q' to quit)
-# Ollama Chatting with History refference https://github.com/ollama/ollama-python/blob/main/examples/chat-with-history.py
 while not keyboard.is_pressed('q'):
+    # Ollama Chat with history
     try:
         new_message = text_q.get_nowait()
-        print(new_message)
         chat_response = chat(
             'CUBE',
             messages=[*messages, {'role': 'user', 'content': new_message}]
         )
 
-        #merging past messages with current to conserve history
+        # merging past messages with current to conserve history
         messages += [
             {'role': 'user', 'content': new_message},
             {'role': 'assistant', 'content': chat_response.message.content}
             ]
         print(chat_response.message.content + '\n')
+        client_socket.send(chat_response.message.content.encode())
     except queue.Empty:
         continue
 
 
 
 stop_listening(wait_for_stop=False)
+client_socket.close()

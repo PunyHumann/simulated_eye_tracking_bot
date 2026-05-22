@@ -38,8 +38,7 @@ eye_center_y = 0.0
 
 #Face detection model
 model_path = 'face_landmarker.task'
-# Setup based on official MediaPipe Face Landmarker documentation:
-# https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/python#live-stream_2
+# MediaPipe setup:
 BaseOptions = mp.tasks.BaseOptions
 FaceLandmarker = mp.tasks.vision.FaceLandmarker
 FaceLandmarkerOptions = mp.tasks.vision.FaceLandmarkerOptions
@@ -47,7 +46,7 @@ FaceLandmarkerResult = mp.tasks.vision.FaceLandmarkerResult
 VisionRunningMode = mp.tasks.vision.RunningMode
 
 # Here we can play around with the result
-def print_result(result, output_image, timestamp_ms):
+def return_result(result, output_image, timestamp_ms):
     global keep_running
     global mp_clipboard
     global eye_center_x
@@ -88,14 +87,12 @@ def print_result(result, output_image, timestamp_ms):
         eye_center_y = ((lc_y + rc_y)/2 - 0.5) * -2
         #print(f"x: {eye_center_x}, y: {eye_center_y}")
 
-
-
         mp_clipboard = numpy_matrix
         
 options = FaceLandmarkerOptions(
     base_options=BaseOptions(model_asset_path=model_path),
     running_mode=VisionRunningMode.LIVE_STREAM,
-    result_callback=print_result,
+    result_callback=return_result,
     num_faces=1,
     output_face_blendshapes=True,
     output_facial_transformation_matrixes=True)

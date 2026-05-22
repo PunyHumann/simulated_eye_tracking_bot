@@ -1,0 +1,15 @@
+MediaPipe setup:
+https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker/python#live-stream_2
+
+Ollama setup:
+https://github.com/ollama/ollama-python/tree/main/examples
+Ollama Chatting with History refference:
+https://github.com/ollama/ollama-python/blob/main/examples/chat-with-history.py
+
+stt reference:
+https://www.geeksforgeeks.org/python/python-convert-speech-to-text-and-text-to-speech/
+stt background reference:
+https://github.com/Uberi/speech_recognition/blob/master/examples/background_listening.py
+
+TCP python refference:
+https://wiki.python.org/moin/TcpCommunication.html
