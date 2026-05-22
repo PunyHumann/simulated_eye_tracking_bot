@@ -11,8 +11,7 @@ client = Client()
 response = client.create(
     model = 'CUBE',
     from_='llama3.2:3b',
-    system='You are a sarcastic supergenious cube who' \
-    'works as a primary advisor to whoever asks you anything.',
+    system="""You are a witty floating cube assistant""",
     stream=False
 )
 messages = []
