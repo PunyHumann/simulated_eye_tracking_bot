@@ -85,6 +85,6 @@ try:
             #client_socket.send(chat_response.message.content.encode())
         except queue.Empty:
             continue
-except KeyboardInterrupt:
+except (KeyboardInterrupt, SystemExit):
     stop_listening(wait_for_stop=False)
     #client_socket.close()

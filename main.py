@@ -5,28 +5,34 @@ import time
 import sys
 
 print("Starting Cube...")
-print("Press ENTER to Exit...")
+print("Press Ctrl+C or cmd+C to Exit...")
 
-mp_tracker = subprocess.Popen(
-    [sys.executable, "trackingmp.py"],
-    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+mp_tracker = subprocess.Popen([sys.executable, "trackingmp.py"])
 print("MediaPipe innitialized...")
 time.sleep(2)
-ollama_engine = subprocess.Popen(
-    [sys.executable, "ollama_engine.py"],
-    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+ollama_engine = subprocess.Popen([sys.executable, "ollama_engine.py"])
 print("Ollama engine innitialized...")
 
 #Press 'enter' to exit
 try:
-    input()
+    while True:
+        time.sleep(1)
 
-except (KeyboardInterrupt, Exception):
-    pass
-    
-os.kill(mp_tracker.pid, signal.CTRL_C_EVENT)
-os.kill(ollama_engine.pid, signal.CTRL_C_EVENT)
-mp_tracker.wait()
-ollama_engine.wait()
+except (KeyboardInterrupt, SystemExit):   
+    mp_tracker.terminate()
+    ollama_engine.terminate()
+
+    try:
+        mp_tracker.wait(timeout=3)
+    except subprocess.TimeoutExpired:
+        print("mp tracker took to long, force kill...")
+        mp_tracker.kill()
+        
+    try:
+        ollama_engine.wait(timeout=3)
+    except subprocess.TimeoutExpired:
+        print("ollama took too long, force kill...")
+        ollama_engine.kill()
+
 
 print("Everything off...")
