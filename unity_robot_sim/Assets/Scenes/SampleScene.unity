@@ -591,7 +591,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   maxAngleX: 15
   maxAngleY: 20
-  swayStrength: 2
+  swayStrength: 1
+  swaySpeed: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

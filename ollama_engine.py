@@ -1,7 +1,6 @@
 import speech_recognition as sr
 import pyttsx3
 import queue
-import keyboard
 import socket
 from ollama import Client
 from ollama import chat
@@ -66,26 +65,28 @@ stop_listening = recognizer.listen_in_background(mic, background_callback)
 # OLLAMA CHAT LOOP
 
 # Main loop (press 'q' to quit)
-try:
-    while True:
-        # Ollama Chat with history
-        try:
-            new_message = text_q.get_nowait()
-            print(new_message)
-            chat_response = chat(
-                'CUBE',
-                messages=[*messages, {'role': 'user', 'content': new_message}]
-            )
 
-            # merging past messages with current to conserve history
-            messages += [
-                {'role': 'user', 'content': new_message},
-                {'role': 'assistant', 'content': chat_response.message.content}
-                ]
-            print(chat_response.message.content + '\n')
-            #client_socket.send(chat_response.message.content.encode())
-        except queue.Empty:
+while True:
+    # Ollama Chat with history
+    try:
+        new_message = text_q.get_nowait()
+        print(new_message)
+        if "exit" in new_message:
+            break
+        chat_response = chat(
+            'CUBE',
+            messages=[*messages, {'role': 'user', 'content': new_message}]
+        )
+
+        # merging past messages with current to conserve history
+        messages += [
+            {'role': 'user', 'content': new_message},
+            {'role': 'assistant', 'content': chat_response.message.content}
+            ]
+        print(chat_response.message.content + '\n')
+        #client_socket.send(chat_response.message.content.encode())
+    except queue.Empty:
             continue
-except KeyboardInterrupt:
-    stop_listening(wait_for_stop=False)
-    #client_socket.close()
+
+stop_listening(wait_for_stop=False)
+#client_socket.close()
