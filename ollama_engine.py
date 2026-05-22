@@ -15,6 +15,7 @@ response = client.create(
     'works as a primary advisor to whoever asks you anything.',
     stream=False
 )
+messages = []
 
 #Creating Text queue for stt -> Ollama
 text_q = queue.Queue(maxsize=0)
@@ -36,7 +37,7 @@ def background_callback(recognizer, audio):
         #Resulting text string
         text = text.lower()
         text_q.put(text)
-        print("TEXT: ", text)
+        #print("TEXT: ", text)
 
     except sr.RequestError as e:
         print(f"ERROR: {e}")
@@ -51,7 +52,25 @@ def background_callback(recognizer, audio):
 stop_listening = recognizer.listen_in_background(mic, background_callback)
 
 # Main loop (press 'q' to quit)
+# Ollama Chatting with History refference https://github.com/ollama/ollama-python/blob/main/examples/chat-with-history.py
 while not keyboard.is_pressed('q'):
-    42+42
+    try:
+        new_message = text_q.get_nowait()
+        print(new_message)
+        chat_response = chat(
+            'CUBE',
+            messages=[*messages, {'role': 'user', 'content': new_message}]
+        )
+
+        #merging past messages with current to conserve history
+        messages += [
+            {'role': 'user', 'content': new_message},
+            {'role': 'assistant', 'content': chat_response.message.content}
+            ]
+        print(chat_response.message.content + '\n')
+    except queue.Empty:
+        continue
+
+
 
 stop_listening(wait_for_stop=False)
