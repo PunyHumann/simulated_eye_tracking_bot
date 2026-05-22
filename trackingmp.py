@@ -112,37 +112,37 @@ with FaceLandmarker.create_from_options(options) as landmarker:
 
     print("Click the camera window and press 'q' to quit!")
     # Will begin capturing
-    while keep_running:
-        # Capture frame-by-frame
-        # 'frame' is a giant multi-dimensional grid of pixel numbers
-        ret, frame = cap.read()
-        frame_timestamp = get_timestamp()
-        
-        if not ret:
-            print("Error: Could not read from webcam.")
-            break
-        
-        #converting BGR to RGB / creating mp image object
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
-        #running model
-        landmarker.detect_async(mp_image, frame_timestamp)
-        
-        #image output
-        if mp_clipboard is not None:
-            rendered_frame = cv2.cvtColor(mp_clipboard, cv2.COLOR_RGB2BGR)
-            cv2.imshow("Face detection", rendered_frame)
-        
-        #udp
-        eye_center_x_string = f"{eye_center_x:.2f}"
-        eye_center_y_string = f"{eye_center_y:.2f}"
-        udp_string = eye_center_x_string + ',' + eye_center_y_string
-        client_socket.sendto(udp_string.encode(), (IP_ADDRESS, PORT_NUM))
+    try:
+        while True:
+            # Capture frame-by-frame
+            # 'frame' is a giant multi-dimensional grid of pixel numbers
+            ret, frame = cap.read()
+            frame_timestamp = get_timestamp()
+            
+            if not ret:
+                print("Error: Could not read from webcam.")
+                break
+            
+            #converting BGR to RGB / creating mp image object
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
+            #running model
+            landmarker.detect_async(mp_image, frame_timestamp)
+            
+            #image output
+            if mp_clipboard is not None:
+                rendered_frame = cv2.cvtColor(mp_clipboard, cv2.COLOR_RGB2BGR)
+                cv2.imshow("Face detection", rendered_frame)
+            
+            #udp
+            eye_center_x_string = f"{eye_center_x:.2f}"
+            eye_center_y_string = f"{eye_center_y:.2f}"
+            udp_string = eye_center_x_string + ',' + eye_center_y_string
+            client_socket.sendto(udp_string.encode(), (IP_ADDRESS, PORT_NUM))
 
-        # q to quit - 1ms buffer
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            keep_running = False
-
-    # Shut off
-    cap.release()
-    cv2.destroyAllWindows()
+            cv2.waitKey(1)
+        
+    except KeyboardInterrupt:
+        # Shut off
+        cap.release()
+        cv2.destroyAllWindows()

@@ -11,7 +11,7 @@ IP_ADDRESS = "127.0.0.1"
 PORT_NUM = 5009
 BUFFER_SIZE = 8192
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((IP_ADDRESS, PORT_NUM))
+#client_socket.connect((IP_ADDRESS, PORT_NUM))
 
 
 #Ollama setup
@@ -19,7 +19,7 @@ client = Client()
 response = client.create(
     model = 'CUBE',
     from_='llama3.2:3b',
-    system="""You are a witty floating cube assistant""",
+    system="""You are a witty floating cube assistant who speaks in brief sentences""",
     stream=False
 )
 messages = []
@@ -66,26 +66,26 @@ stop_listening = recognizer.listen_in_background(mic, background_callback)
 # OLLAMA CHAT LOOP
 
 # Main loop (press 'q' to quit)
-while not keyboard.is_pressed('q'):
-    # Ollama Chat with history
-    try:
-        new_message = text_q.get_nowait()
-        chat_response = chat(
-            'CUBE',
-            messages=[*messages, {'role': 'user', 'content': new_message}]
-        )
+try:
+    while True:
+        # Ollama Chat with history
+        try:
+            new_message = text_q.get_nowait()
+            print(new_message)
+            chat_response = chat(
+                'CUBE',
+                messages=[*messages, {'role': 'user', 'content': new_message}]
+            )
 
-        # merging past messages with current to conserve history
-        messages += [
-            {'role': 'user', 'content': new_message},
-            {'role': 'assistant', 'content': chat_response.message.content}
-            ]
-        print(chat_response.message.content + '\n')
-        client_socket.send(chat_response.message.content.encode())
-    except queue.Empty:
-        continue
-
-
-
-stop_listening(wait_for_stop=False)
-client_socket.close()
+            # merging past messages with current to conserve history
+            messages += [
+                {'role': 'user', 'content': new_message},
+                {'role': 'assistant', 'content': chat_response.message.content}
+                ]
+            print(chat_response.message.content + '\n')
+            #client_socket.send(chat_response.message.content.encode())
+        except queue.Empty:
+            continue
+except KeyboardInterrupt:
+    stop_listening(wait_for_stop=False)
+    #client_socket.close()

@@ -64,7 +64,6 @@ public class UDP_mp_tracker : MonoBehaviour
         prevAngleX = angleX;
 
         transform.rotation = Quaternion.Slerp(prevState, currState, 0.05f);
-        //t += Math.PI/6;
         t += Time.deltaTime * swaySpeed;
 
     }
