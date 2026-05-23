@@ -60,7 +60,7 @@ messages = []
 
 # TEXT TO SPEACH SETTUP
 
-voice_type = os.path.join("tts_voices", "en_US-amy-medium.onnx")
+voice_type = os.path.join("tts_voices", "en_US-danny-low.onnx")
 voice = PiperVoice.load(voice_type)
 #boolean check so no auto voice input
 is_talking = False
