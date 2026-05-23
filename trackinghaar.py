@@ -17,7 +17,7 @@ def get_horizontal_distance(frame, center, x, y, w, h):
 # Initialize the webcam hardware (0 is the default built-in camera)
 cap = cv2.VideoCapture(0)
 
-print("Press 'q' to quit")
+print(" 'q' to quit")
 # Will begin capturing
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
