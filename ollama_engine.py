@@ -1,13 +1,45 @@
 import os
 import time
 import wave
-import winsound
+import platform
+import subprocess
 from piper import PiperVoice
 import speech_recognition as sr
-import pyttsx3
 import queue
 from ollama import Client
 from ollama import chat
+
+
+
+# OS FILEPATH
+
+def play_audio_anywhere(file_path):
+    """Detects the OS and plays a .wav file using native system tools."""
+    current_os = platform.system()
+    
+    try:
+        if current_os == "Windows":
+            import winsound
+            # Blocks execution until done playing
+            winsound.PlaySound(file_path, winsound.SND_FILENAME)
+            
+        elif current_os == "Darwin":  # macOS
+            # afplay is Mac's built-in hidden audio player
+            subprocess.run(["afplay", file_path], check=True)
+            
+        elif current_os == "Linux":
+            # aplay is standard on most Linux distributions
+            subprocess.run(["aplay", file_path], check=True)
+            
+        else:
+            print(f"Sorry, audio playback isn't set up for: {current_os}")
+            
+    except Exception as e:
+        print(f"Error playing audio: {e}")
+
+
+#------------------------------------------------------------------------------------
+
 
 # OLLAMA SETTUP
 
@@ -95,10 +127,11 @@ try:
             with wave.open("ollama_voice.wav", "wb") as wav_file:
                 voice.synthesize_wav(chat_response.message.content, wav_file)
             is_talking = True
-            winsound.PlaySound("ollama_voice.wav", winsound.SND_FILENAME)
+            play_audio_anywhere("ollama_voice.wav")
             is_talking = False
             
         except queue.Empty:
+            time.sleep(0.1)
             continue
 except (KeyboardInterrupt, SystemExit):
     stop_listening(wait_for_stop=False)
