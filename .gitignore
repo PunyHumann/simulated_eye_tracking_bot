@@ -5,6 +5,11 @@ env/
 __pycache__/
 *.py[cod]
 
+# AI Models & Large Assets
+tts_voices/*
+!tts_voices/.gitkeep
+*.onnx
+
 # Universal Unity Protection
 **/Library/
 **/Logs/

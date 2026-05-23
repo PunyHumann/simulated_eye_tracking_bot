@@ -16,3 +16,5 @@ https://wiki.python.org/moin/TcpCommunication.html
 
 Piper Documentation:
 https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_PYTHON.md
+For voice choices:
+https://rhasspy.github.io/piper-samples/#en_US-amy-medium
