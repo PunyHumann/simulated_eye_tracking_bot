@@ -1,5 +1,5 @@
 import speech_recognition as sr
-import pyttsx3
+import time
 import queue
 from ollama import Client
 from ollama import chat
@@ -75,6 +75,7 @@ try:
                 ]
             print(chat_response.message.content + '\n')
         except queue.Empty:
+            time.sleep(0.1)
             continue
 except (KeyboardInterrupt, SystemExit):
     stop_listening(wait_for_stop=False)
