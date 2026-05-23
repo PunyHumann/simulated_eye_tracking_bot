@@ -10,7 +10,7 @@ from ollama import Client
 from ollama import chat
 
 
-# OS FILEPATH
+# OS CHECK
 
 def play_audio_anywhere(file_path):
     """Detects the OS and plays a .wav file using native system tools."""
@@ -74,9 +74,13 @@ text_q = queue.Queue(maxsize=0)
 
 # Stt setup
 recognizer = sr.Recognizer()
-mic = sr.Microphone()
+if platform.system() == "Windows":
+    mic = sr.Microphone()
+else: #Mac
+    mic = sr.Microphone(device_index=2)
+
 with mic:
-    recognizer.adjust_for_ambient_noise(mic, duration=0.5)
+    recognizer.adjust_for_ambient_noise(mic, duration=0.25)
 
 #This fn will be called by background audio thread
 def background_callback(recognizer, audio):
