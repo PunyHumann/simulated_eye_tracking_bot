@@ -21,8 +21,8 @@ The project is divided into distinct operational modules that run concurrently:
 
 **1. Clone the repository and navigate to the directory:**
 ```bash
-git clone <your-repository-url>
-cd <your-repository-folder>
+git clone https://github.com/PunyHumann/simulated_eye_tracking_bot.git
+cd simulated_eye_tracking_bot
 ```
 
 **2. Initialize a Python virtual environment:**
@@ -49,19 +49,21 @@ The system is separated into discrete scripts to allow for modular execution and
 **1. Start the Background AI Service**
 Ensure the Ollama application is running in the background of your operating system.
 
-**2. Run the Vision and Tracking Module**
-This will initialize the webcam and begin streaming UDP coordinate data.
-```bash
-python trackingmp.py
-```
+**2. Unity**
+Open the unity folder in unity
+Click on sample scenes -> Sample Scene
+In the Heirarchy clickthe arrow on the left of Rotation Test
+View the cube object in inspector and make sure the UDB_mp_tracker component is attached
+of you don't see it click "add component" and look for it in the list
+Click the play button above
 
-**3. Run the Conversational Audio Engine**
-This initiates the microphone listener, the Ollama chat loop, and the audio playback router.
+**3. Run the main.py file**
+This will initialize the whole settup.
 ```bash
-python ollama_engine.py
+python main.py
 ```
+(Press `Ctrl + C` in either terminal to safely terminate the processes and release the hardware peripherals.)
 
-Press `Ctrl + C` in either terminal to safely terminate the processes and release the hardware peripherals.
 
 ## Network Protocol
 The vision module broadcasts structural data over a local UDP socket. By default, it targets:
