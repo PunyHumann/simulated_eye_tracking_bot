@@ -13,3 +13,6 @@ https://github.com/Uberi/speech_recognition/blob/master/examples/background_list
 
 TCP python refference:
 https://wiki.python.org/moin/TcpCommunication.html
+
+Piper Documentation:
+https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_PYTHON.md

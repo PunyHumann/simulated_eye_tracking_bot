@@ -12,7 +12,7 @@ using Random = System.Random;
 public class UDP_mp_tracker : MonoBehaviour
 {
     private UdpClient udpClient;
-    private IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+    private IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 5008);
     private float prevAngleY = 0.0f;
     private float prevAngleX = 0.0f;
     private float centerRatioY = 0.0f;
@@ -29,7 +29,7 @@ public class UDP_mp_tracker : MonoBehaviour
             Debug.Log("Thread Innitialize...");
             byte[] messageEncrypted = udpClient.Receive(ref remoteEndPoint);
             Debug.Log("UDP Recieve...");
-            string messageString = System.Text.Encoding.UTF8.GetString(messageEncrypted);
+            string messageString = Encoding.UTF8.GetString(messageEncrypted);
             //float conversion might be unsafe may need to change
             string[] messageArr = messageString.Split(',');
             centerRatioY = float.Parse(messageArr[0]);

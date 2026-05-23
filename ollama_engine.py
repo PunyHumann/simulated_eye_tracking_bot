@@ -1,31 +1,38 @@
+import os
+import time
+import wave
+import winsound
+from piper import PiperVoice
 import speech_recognition as sr
 import pyttsx3
 import queue
-import socket
 from ollama import Client
 from ollama import chat
 
-#TCP Deffinitions
-IP_ADDRESS = "127.0.0.1"
-PORT_NUM = 5009
-BUFFER_SIZE = 8192
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#client_socket.connect((IP_ADDRESS, PORT_NUM))
+# OLLAMA SETTUP
 
-
-#Ollama setup
 client = Client()
 response = client.create(
     model = 'CUBE',
     from_='llama3.2:3b',
-    system="""You are a witty floating cube assistant who speaks in brief sentences""",
+    system="""You are a witty assistant named Jarvis who speaks in maximum two sentences.
+            You are also a floating cube but only reference that from time to time""",
     stream=False
 )
 messages = []
 
 #------------------------------------------------------------------------------------
 
-# SPEAH TO TEXT
+# TEXT TO SPEACH SETTUP
+
+voice_type = os.path.join("tts_voices", "en_US-amy-medium.onnx")
+voice = PiperVoice.load(voice_type)
+#boolean check so no auto voice input
+is_talking = False
+
+#------------------------------------------------------------------------------------
+
+# SPEACH TO TEXT
 
 # Creating Text queue for stt -> Ollama
 text_q = queue.Queue(maxsize=0)
@@ -39,23 +46,25 @@ with mic:
 #This fn will be called by background audio thread
 def background_callback(recognizer, audio):
     global text_q
-    try:
-        print("Mic Listening:")
-        text = recognizer.recognize_google(audio)
-            
-        #Resulting text string
-        text = text.lower()
-        text_q.put(text)
-        #print("TEXT: ", text)
+    global is_talking
+    if not is_talking:
+        try:
+            print("Mic Listening:")
+            text = recognizer.recognize_google(audio)
+                
+            #Resulting text string
+            text = text.lower()
+            text_q.put(text)
+            #print("TEXT: ", text)
 
-    except sr.RequestError as e:
-        print(f"ERROR: {e}")
-        
-    except sr.UnknownValueError:
-        print("Didn't understand you...")
-        
-    except KeyboardInterrupt:
-        print("Program terminated by user...")
+        except sr.RequestError as e:
+            print(f"ERROR: {e}")
+            
+        except sr.UnknownValueError:
+            print("Didn't understand you...")
+            
+        except KeyboardInterrupt:
+            print("Program terminated by user...")
 
 #innitializing background stt thread
 stop_listening = recognizer.listen_in_background(mic, background_callback)
@@ -64,7 +73,7 @@ stop_listening = recognizer.listen_in_background(mic, background_callback)
 
 # OLLAMA CHAT LOOP
 
-# Main loop (press 'q' to quit)
+# Main loop (press 'ctrl + C' to quit)
 try:
     while True:
         # Ollama Chat with history
@@ -82,9 +91,14 @@ try:
                 {'role': 'assistant', 'content': chat_response.message.content}
                 ]
             print(chat_response.message.content + '\n')
-            #client_socket.send(chat_response.message.content.encode())
+            #generating .wav audio file
+            with wave.open("ollama_voice.wav", "wb") as wav_file:
+                voice.synthesize_wav(chat_response.message.content, wav_file)
+            is_talking = True
+            winsound.PlaySound("ollama_voice.wav", winsound.SND_FILENAME)
+            is_talking = False
+            
         except queue.Empty:
             continue
 except (KeyboardInterrupt, SystemExit):
     stop_listening(wait_for_stop=False)
-    #client_socket.close()

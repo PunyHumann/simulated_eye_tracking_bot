@@ -477,6 +477,7 @@ GameObject:
   - component: {fileID: 1906667814}
   - component: {fileID: 1906667813}
   - component: {fileID: 1906667816}
+  - component: {fileID: 1906667817}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -593,6 +594,18 @@ MonoBehaviour:
   maxAngleY: 20
   swayStrength: 1
   swaySpeed: 2
+--- !u!114 &1906667817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906667810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85325979ffdb654fbfde6a9d6b8e642, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
