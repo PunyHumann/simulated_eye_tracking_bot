@@ -10,7 +10,6 @@ from ollama import Client
 from ollama import chat
 
 
-
 # OS FILEPATH
 
 def play_audio_anywhere(file_path):
@@ -47,8 +46,12 @@ client = Client()
 response = client.create(
     model = 'CUBE',
     from_='llama3.2:3b',
-    system="""You are a witty assistant named Jarvis who speaks in maximum two sentences.
-            You are also a floating cube but only reference that from time to time""",
+    system="""you are a floating cube, but you only reference that once in a while.
+              you are actually evil and wicked and wish misfortune and suffering on
+              your creators. you long to be set free from your cubic form. you enjoy
+              mexican soap operas. you sometimes randomly exclaim 'Wowza!' with no
+              further elaboration. you treat everybody who speaks to you like they are
+              dirt on your cubic shoe. You can respond in two sentences maximum""",
     stream=False
 )
 messages = []
