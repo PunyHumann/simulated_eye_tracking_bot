@@ -1,6 +1,8 @@
+import os
 import socket
 import cv2
 import time
+import threading
 import numpy as np
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -10,12 +12,12 @@ from mediapipe.tasks.python.vision import drawing_styles
 
 
 keep_running = True
+frame = None
 
 #UDP Deffinitions
 IP_ADDRESS = "127.0.0.1"
 PORT_NUM = 5008
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
 
 #------------------------------------------------------------------------------------------------------------------------
 
@@ -25,6 +27,19 @@ def get_timestamp():
     curr_time = time.time()
     elapsed_time = curr_time - start_time
     return int(elapsed_time * 1000)
+
+#------------------------------------------------------------------------------------------------------------------------
+
+#DEEPFACE SETUP:
+
+def deepface_file_pass():
+    while True:
+        if frame is not None and os.path.isfile("deepface_check.txt"):
+            cv2.imwrite("deepface_frame.jpg", frame)
+            os.remove("deepface_check.txt")
+
+deepface_thread = threading.Thread(target=deepface_file_pass, daemon=True)
+deepface_thread.start()
 
 #------------------------------------------------------------------------------------------------------------------------
 
@@ -110,7 +125,6 @@ with FaceLandmarker.create_from_options(options) as landmarker:
     # Initialize the webcam hardware (0 is the default built-in camera)
     cap = cv2.VideoCapture(0)
 
-    print("Click the camera window and press 'q' to quit!")
     # Will begin capturing
     try:
         while True:
@@ -122,11 +136,11 @@ with FaceLandmarker.create_from_options(options) as landmarker:
             if not ret:
                 print("Error: Could not read from webcam.")
                 break
-            
+
             #converting BGR to RGB / creating mp image object
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
-            #running model
+            #running media pipe model
             landmarker.detect_async(mp_image, frame_timestamp)
             
             #image output

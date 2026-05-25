@@ -1,6 +1,5 @@
 import os
 import subprocess
-import signal
 import time
 import sys
 
@@ -34,5 +33,9 @@ except (KeyboardInterrupt, SystemExit):
         print("ollama took too long, force kill...")
         ollama_engine.kill()
 
+if os.path.isfile("deepface_frame.jpg"):
+    os.remove("deepface_frame.jpg")
+if os.path.isfile("ollama_voice.wav"):
+    os.remove("ollama_voice.wav")
 
 print("Everything off...")

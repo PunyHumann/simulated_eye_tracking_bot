@@ -3,12 +3,20 @@ import time
 import wave
 import platform
 import subprocess
+import socket
 from piper import PiperVoice
 import speech_recognition as sr
 import queue
 from ollama import Client
 from ollama import chat
+from deepface import DeepFace
 
+# UDP Settup
+
+IP_ADDRESS = "127.0.0.1"
+PORT_NUM = 5009
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp_string = "signal"
 
 # OS CHECK
 
@@ -54,6 +62,8 @@ response = client.create(
               dirt on your cubic shoe. You can respond in two sentences maximum""",
     stream=False
 )
+emotion_prompt = """THIS IS HOW I AM FEELING, TRY TO INCORPORATE IT INTO YOUR RESPONSE 
+(unless it is neutral in which case don't use it): """
 messages = []
 
 #------------------------------------------------------------------------------------
@@ -90,10 +100,17 @@ def background_callback(recognizer, audio):
         try:
             print("Mic Listening:")
             text = recognizer.recognize_google(audio)
-                
+            #making the file sync
+            with open("deepface_check.txt", 'w') as file:
+                pass
+            while os.path.isfile("deepface_check.txt"):
+                time.sleep(0.1)
+            deepface_dict = DeepFace.analyze(img_path="deepface_frame.jpg", actions=['emotion'], enforce_detection=False)
+            emotion = deepface_dict[0]["dominant_emotion"]
             #Resulting text string
             text = text.lower()
-            text_q.put(text)
+            prompt = emotion_prompt + emotion + "\n" + text
+            text_q.put((prompt))
             #print("TEXT: ", text)
 
         except sr.RequestError as e:
@@ -118,7 +135,7 @@ try:
         # Ollama Chat with history
         try:
             new_message = text_q.get_nowait()
-            print(new_message)
+            print( new_message)
             chat_response = chat(
                 'CUBE',
                 messages=[*messages, {'role': 'user', 'content': new_message}]
@@ -133,6 +150,7 @@ try:
             #generating .wav audio file
             with wave.open("ollama_voice.wav", "wb") as wav_file:
                 voice.synthesize_wav(chat_response.message.content, wav_file)
+            client_socket.sendto(udp_string.encode(), (IP_ADDRESS, PORT_NUM))
             is_talking = True
             play_audio_anywhere("ollama_voice.wav")
             is_talking = False

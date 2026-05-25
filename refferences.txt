@@ -18,3 +18,8 @@ Piper Documentation:
 https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/API_PYTHON.md
 For voice choices:
 https://rhasspy.github.io/piper-samples/#en_US-amy-medium
+
+https://github.com/RazorDMG64 for inspiring the idea for .wav file transfer to Unity :D
+
+File managing:
+https://www.geeksforgeeks.org/python/create-an-empty-file-using-python/
