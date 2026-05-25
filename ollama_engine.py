@@ -152,7 +152,8 @@ try:
                 voice.synthesize_wav(chat_response.message.content, wav_file)
             client_socket.sendto(udp_string.encode(), (IP_ADDRESS, PORT_NUM))
             is_talking = True
-            play_audio_anywhere("ollama_voice.wav")
+            # UDP signal from unity that voice has be completed
+            #play_audio_anywhere("ollama_voice.wav")
             is_talking = False
             
         except queue.Empty:
