@@ -7,8 +7,9 @@ __pycache__/
 
 # AI Models & Large Assets
 tts_voices/*
+!tts_voices/*.onnx
+!tts_voices/*.json
 !tts_voices/.gitkeep
-*.onnx
 
 # Universal Unity Protection
 **/Library/
