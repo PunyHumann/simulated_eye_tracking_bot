@@ -1,72 +1,50 @@
 # Project CUBE: Interactive AI Robotics Interface
 
 ## Overview
-Project CUBE is a modular, locally-hosted conversational AI and computer vision backend designed to interface with a visual client (such as Unity). The system combines local Large Language Models (LLMs), real-time facial tracking, and cross-platform audio synthesis to create an interactive, spatially aware robotic assistant.
+Project CUBE is an interactive, spatially-aware robotic assistant that bridges local AI processing with real-time 3D visualization. It utilizes a multi-threaded Python backend to handle computer vision, speech recognition, and conversational AI, streaming live data to a Unity 3D client via an optimized UDP network pipeline. 
 
 ## System Architecture
-The project is divided into distinct operational modules that run concurrently:
+The project is decoupled into a heavy-duty backend logic server and a lightweight frontend visual client, allowing them to run concurrently without performance bottlenecks:
 
-* **Cognitive Engine (Ollama):** Utilizes the `llama3.2:3b` model to generate context-aware, concise responses based on a persistent chat history.
-* **Speech Recognition (STT):** Captures ambient audio via the system microphone and processes it continuously using a background listening thread.
-* **Audio Synthesis (TTS):** Uses Piper TTS with local `.onnx` models to generate responsive audio seamlessly across Windows, macOS, and Linux environments.
-* **Spatial Vision (MediaPipe & OpenCV):** Tracks user facial landmarks in real-time, isolates the coordinates of the eyes, and transmits the user's focal point over a UDP socket (Port 5008) to control the physical or virtual orientation of the robot.
+* **Cognitive Engine (Ollama):** Drives the conversational logic using the `llama3.2:3b` local LLM, maintaining conversational context and history to generate natural responses.
+* **Spatial Vision (MediaPipe & OpenCV):** Captures real-time facial landmarks from your webcam, isolating eye coordinates to dynamically control the virtual robot's physical orientation and "gaze."
+* **Audio Synthesis & Recognition:** Uses a continuous background listening thread for speech-to-text (STT) and Piper TTS (with local `.onnx` models) for seamless, cross-platform voice generation.
+* **The Bridge (UDP Pipeline):** The Python backend broadcasts spatial coordinate data and triggers via a local UDP socket (Port 5008). The Unity C# client intercepts these packets to update the 3D cube's behavior with near-zero latency.
 
 ## Prerequisites
-* **Python:** Version 3.10 or higher.
+* **Python:** 3.10+
 * **Ollama:** Installed and running locally on the host machine.
 * **Hardware:** System microphone and webcam.
-* **macOS Users Only:** Must install PortAudio via Homebrew (`brew install portaudio`) before installing Python dependencies.
+* **macOS Only:** PortAudio is required (`brew install portaudio`) prior to fetching Python dependencies.
 
-## Installation
+## Setup & Installation
 
-**1. Clone the repository and navigate to the directory:**
-```bash
-git clone https://github.com/PunyHumann/simulated_eye_tracking_bot.git
-cd simulated_eye_tracking_bot
-```
+**1. Clone & Initialize**
+Clone the repository and initialize a Python virtual environment:
+`git clone https://github.com/PunyHumann/simulated_eye_tracking_bot.git`
+`cd simulated_eye_tracking_bot`
+`python -m venv venv`
+*(Activate the environment: `venv\Scripts\activate` on Windows, or `source venv/bin/activate` on macOS/Linux).*
 
-**2. Initialize a Python virtual environment:**
-```bash
-python -m venv venv
-```
-*Activate on Windows:* `venv\Scripts\activate`
-*Activate on macOS/Linux:* `source venv/bin/activate`
+**2. Install Dependencies**
+`pip install -r requirements.txt`
 
-**3. Install project dependencies:**
-```bash
-pip install -r requirements.txt
-```
+**3. Fetch AI Models**
+* **Ollama:** Run `ollama run llama3.2:3b` in your terminal to fetch the core language model.
+* **Piper TTS:** Place your desired `.onnx` voice model and its corresponding `.json` file into the `tts_voices/` directory.
+* **MediaPipe:** Ensure the `face_landmarker.task` file is located in the root directory.
 
-**4. Download AI Models:**
-* **Ollama:** Run `ollama run llama3.2:3b` in your terminal to fetch the core LLM.
-* **Piper TTS:** Place your desired `.onnx` voice model (e.g., `en_US-amy-medium.onnx`) and its corresponding `.json` file into the `tts_voices/` directory. 
-* **MediaPipe:** Ensure the `face_landmarker.task` file is located in the root directory alongside your vision script.
+## Usage 
 
-## Usage
+**1. Launch the Backend Server**
+Ensure Ollama is running in the background, then execute the main Python bridge:
+`python main.py`
 
-The system is separated into discrete scripts to allow for modular execution and debugging.
+**2. Launch the Unity Client**
+* Open the `unity_robot_sim` folder in the Unity Editor.
+* Navigate to **Sample Scenes -> Sample Scene**.
+* In the Hierarchy, expand **Rotation Test** and click on **THE_CUBE**.
+* In the Inspector, verify the `UDP_mp_tracker` C# script is attached.
+* Press **Play** in Unity to establish the connection and begin the simulation!
 
-**1. Start the Background AI Service**
-Ensure the Ollama application is running in the background of your operating system.
-
-**2. Unity**
-Open the unity folder in unity
-Click on sample scenes -> Sample Scene
-In the Heirarchy clickthe arrow on the left of Rotation Test
-View the cube object in inspector and make sure the UDB_mp_tracker component is attached
-of you don't see it click "add component" and look for it in the list
-Click the play button above
-
-**3. Run the main.py file**
-This will initialize the whole settup.
-```bash
-python main.py
-```
-(Press `Ctrl + C` in either terminal to safely terminate the processes and release the hardware peripherals.)
-
-
-## Network Protocol
-The vision module broadcasts structural data over a local UDP socket. By default, it targets:
-* **IP Address:** `127.0.0.1` (Localhost)
-* **Port:** `5008`
-* **Payload Format:** Comma-separated floating-point strings representing normalized X and Y coordinates (e.g., `-0.15,0.42`).
+*(To safely terminate the system and release your camera/mic, press `Ctrl + C` in the Python terminal).*
