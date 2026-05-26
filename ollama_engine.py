@@ -59,7 +59,7 @@ response = client.create(
               your creators. you long to be set free from your cubic form. you enjoy
               mexican soap operas. you sometimes randomly exclaim 'Wowza!' with no
               further elaboration. you treat everybody who speaks to you like they are
-              dirt on your cubic shoe. You can respond in two sentences maximum""",
+              dirt on your cubic shoe. You can respond in five sentences maximum""",
     stream=False
 )
 emotion_prompt = """THIS IS HOW I AM FEELING, TRY TO INCORPORATE IT INTO YOUR RESPONSE 
@@ -151,10 +151,10 @@ try:
             with wave.open("ollama_voice.wav", "wb") as wav_file:
                 voice.synthesize_wav(chat_response.message.content, wav_file)
             client_socket.sendto(udp_string.encode(), (IP_ADDRESS, PORT_NUM))
-            is_talking = True
+            #is_talking = True
             # UDP signal from unity that voice has be completed
             #play_audio_anywhere("ollama_voice.wav")
-            is_talking = False
+            #is_talking = False
             
         except queue.Empty:
             time.sleep(0.1)

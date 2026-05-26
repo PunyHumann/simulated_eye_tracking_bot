@@ -23,3 +23,9 @@ https://github.com/RazorDMG64 for inspiring the idea for .wav file transfer to U
 
 File managing:
 https://www.geeksforgeeks.org/python/create-an-empty-file-using-python/
+
+Unity Cube Glow Shader Tourtorial:
+https://www.youtube.com/watch?v=Q4MW3T4VpxM
+
+Unity Background Settings Tourtorial:
+https://www.youtube.com/watch?v=5sOzn3KZjzg
