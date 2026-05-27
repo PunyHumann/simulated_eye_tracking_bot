@@ -18,8 +18,7 @@ PORT_NUM = 5009
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_string = "signal"
 
-# OS CHECK
-
+# Play audio through this file, used for debugging
 def play_audio_anywhere(file_path):
     """Detects the OS and plays a .wav file using native system tools."""
     current_os = platform.system()
@@ -110,8 +109,7 @@ def background_callback(recognizer, audio):
             #Resulting text string
             text = text.lower()
             prompt = emotion_prompt + emotion + "\n" + text
-            text_q.put((prompt))
-            #print("TEXT: ", text)
+            text_q.put(prompt)
 
         except sr.RequestError as e:
             print(f"ERROR: {e}")
@@ -129,7 +127,7 @@ stop_listening = recognizer.listen_in_background(mic, background_callback)
 
 # OLLAMA CHAT LOOP
 
-# Main loop (press 'ctrl + C' to quit)
+# Main loop
 try:
     while True:
         # Ollama Chat with history
@@ -151,10 +149,6 @@ try:
             with wave.open("ollama_voice.wav", "wb") as wav_file:
                 voice.synthesize_wav(chat_response.message.content, wav_file)
             client_socket.sendto(udp_string.encode(), (IP_ADDRESS, PORT_NUM))
-            #is_talking = True
-            # UDP signal from unity that voice has be completed
-            #play_audio_anywhere("ollama_voice.wav")
-            #is_talking = False
             
         except queue.Empty:
             time.sleep(0.1)
