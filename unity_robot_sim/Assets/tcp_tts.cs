@@ -37,8 +37,8 @@ public class tcp_tts : MonoBehaviour
     void Start()
     {
         udpClient = new UdpClient(5009);
-        var filePath = Directory.GetParent(Application.dataPath).Parent;
-        string fileString = Path.Combine(filePath.FullName, "ollama_voice.wav");
+        string rootDir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ".."));
+        string fileString = Path.Combine(rootDir, "ollama_voice.wav");
         fileUri = new Uri(fileString).AbsoluteUri;
         cubeAudioSource = GetComponent<AudioSource>();
         var cubeRenderer = GetComponent<Renderer>();

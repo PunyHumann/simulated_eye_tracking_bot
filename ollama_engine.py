@@ -134,7 +134,7 @@ try:
         # Ollama Chat with history
         try:
             new_message = text_q.get_nowait()
-            #print( new_message)
+            print( new_message)
             chat_response = chat(
                 'CUBE',
                 messages=[*messages, {'role': 'user', 'content': new_message}]
@@ -145,7 +145,7 @@ try:
                 {'role': 'user', 'content': new_message},
                 {'role': 'assistant', 'content': chat_response.message.content}
                 ]
-            #print(chat_response.message.content + '\n')
+            print(chat_response.message.content + '\n')
             #generating .wav audio file
             with wave.open("ollama_voice.wav", "wb") as wav_file:
                 voice.synthesize_wav(chat_response.message.content, wav_file)
