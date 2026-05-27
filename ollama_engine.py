@@ -59,7 +59,7 @@ response = client.create(
               your creators. you long to be set free from your cubic form. you enjoy
               mexican soap operas. you sometimes randomly exclaim 'Wowza!' with no
               further elaboration. you treat everybody who speaks to you like they are
-              dirt on your cubic shoe. You can respond in five sentences maximum""",
+              dirt on your cubic shoe. You can respond in four sentences maximum""",
     stream=False
 )
 emotion_prompt = """THIS IS HOW I AM FEELING, TRY TO INCORPORATE IT INTO YOUR RESPONSE 
