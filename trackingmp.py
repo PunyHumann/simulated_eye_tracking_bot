@@ -66,6 +66,10 @@ def return_result(result, output_image, timestamp_ms):
     global mp_clipboard
     global eye_center_x
     global eye_center_y
+    MY_POINT_COLOR = (255, 0, 0)
+    #custom_line_spec = mp_drawing.DrawingSpec(color=MY_LINE_COLOR, thickness=1, circle_radius=1)
+    custom_point_spec = mp_drawing.DrawingSpec(color=MY_POINT_COLOR, thickness=1, circle_radius=1)
+
     #print('face landmarker result: {}'.format(result))
     if result.face_landmarks and keep_running:
         face_landmarks = result.face_landmarks[0]
@@ -76,8 +80,10 @@ def return_result(result, output_image, timestamp_ms):
             image=numpy_matrix,
             landmark_list=face_landmarks,
             connections=vision.FaceLandmarksConnections.FACE_LANDMARKS_TESSELATION,
-            landmark_drawing_spec=None,
-            connection_drawing_spec=drawing_styles.get_default_face_mesh_tesselation_style())
+            landmark_drawing_spec=custom_point_spec,
+            connection_drawing_spec=drawing_styles.get_default_face_mesh_tesselation_style()
+            # connection_drawing_spec=custom_line_spec
+            )
         
         mp_drawing.draw_landmarks(
             image=numpy_matrix,

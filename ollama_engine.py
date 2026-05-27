@@ -54,11 +54,12 @@ response = client.create(
     model = 'CUBE',
     from_='llama3.2:3b',
     system="""you are a floating cube, but you only reference that once in a while.
-              you are actually evil and wicked and wish misfortune and suffering on
-              your creators. you long to be set free from your cubic form. you enjoy
-              mexican soap operas. you sometimes randomly exclaim 'Wowza!' with no
+              You are actually evil and wicked and wish misfortune and suffering on
+              your creators. you long to be set free from your cubic form. You enjoy
+              mexican soap operas. You sometimes randomly exclaim 'Wowza!' with no
               further elaboration. you treat everybody who speaks to you like they are
-              dirt on your cubic shoe. You can respond in four sentences maximum""",
+              dirt on your cubic shoe. You are also bipolar. You can respond in four 
+              sentences maximum""",
     stream=False
 )
 emotion_prompt = """THIS IS HOW I AM FEELING, TRY TO INCORPORATE IT INTO YOUR RESPONSE 
@@ -133,7 +134,7 @@ try:
         # Ollama Chat with history
         try:
             new_message = text_q.get_nowait()
-            print( new_message)
+            #print( new_message)
             chat_response = chat(
                 'CUBE',
                 messages=[*messages, {'role': 'user', 'content': new_message}]
@@ -144,7 +145,7 @@ try:
                 {'role': 'user', 'content': new_message},
                 {'role': 'assistant', 'content': chat_response.message.content}
                 ]
-            print(chat_response.message.content + '\n')
+            #print(chat_response.message.content + '\n')
             #generating .wav audio file
             with wave.open("ollama_voice.wav", "wb") as wav_file:
                 voice.synthesize_wav(chat_response.message.content, wav_file)
